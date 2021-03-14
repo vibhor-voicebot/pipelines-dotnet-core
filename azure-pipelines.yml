@@ -1,74 +1,55 @@
-# ASP.NET Core
-
-# Build and test ASP.NET Core projects targeting .NET Core.
-# Add steps that run tests, create a NuGet package, deploy, and more:
-# https://docs.microsoft.com/azure/devops/pipelines/languages/dotnet-core
-
 trigger:
 - master
-
 pool:
-  vmImage: 'ubuntu-latest'
-
+  vmImage: ubuntu-latest
 variables:
-  buildConfiguration: 'Release'
-
-#steps:
-#- script: dotnet build --configuration $(buildConfiguration)
-#  displayName: 'dotnet build $(buildConfiguration)'
-
-#- script: dotnet publish --configuration $(buildConfiguration) --output $(Build.ArtifactStagingDirectory)
-#  displayName: 'dotnet publish $(buildConfiguration)'
-#- task: PublishBuildArtifacts@1
-
+  buildConfiguration: Release
 steps:
 - task: DotNetCoreCLI@2
+  displayName: dotnet restore
   inputs:
-    command: 'restore'
-    feedsToUse: 'select'
-    vstsFeed: 'my-vsts-feed' # A series of numbers and letters
-
+    command: restore
+    feedsToUse: select
+    vstsFeed: my-vsts-feed
 - task: DotNetCoreCLI@2
-  displayName: Build
+  displayName: dotnet build
   inputs:
     command: build
     projects: '**/*.csproj'
-    arguments: '--configuration $(buildConfiguration)' 
-    
+    arguments: --configuration $(buildConfiguration)
 - task: DotNetCoreCLI@2
+  displayName: dotnet unit test
   inputs:
     command: test
     projects: '**/*Tests/*.csproj'
-    arguments: '--configuration $(buildConfiguration)'
-    
+    arguments: --configuration $(buildConfiguration)
 - task: DotNetCoreCLI@2
+  displayName: dotnet collect code coverage
   inputs:
     command: test
     projects: '**/*Tests/*.csproj'
-    arguments: '--configuration $(buildConfiguration) --collect "Code coverage"'
-    
+    arguments: --configuration $(buildConfiguration) --collect "Code coverage"
 - task: PublishCodeCoverageResults@1
-  displayName: 'Publish code coverage report'
+  displayName: Publish code coverage report
   inputs:
-    codeCoverageTool: 'Cobertura'
-    summaryFileLocation: '$(Build.SourcesDirectory)/**/coverage.cobertura.xml'
-    
+    codeCoverageTool: Cobertura
+    summaryFileLocation: $(Build.SourcesDirectory)/**/coverage.cobertura.xml
 - task: DotNetCoreCLI@2
+  displayName: zipAfterPublish
   inputs:
     command: publish
-    publishWebProjects: True
-    arguments: '--configuration $(BuildConfiguration) --output $(Build.ArtifactStagingDirectory)'
-    zipAfterPublish: True
-
-# this code takes all the files in $(Build.ArtifactStagingDirectory) and uploads them as an artifact of your build.
+    publishWebProjects: true
+    arguments: --configuration $(BuildConfiguration) --output $(Build.ArtifactStagingDirectory)
+    zipAfterPublish: true
 - task: PublishBuildArtifacts@1
+  displayName: PublishBuildArtifacts
   inputs:
-    pathtoPublish: '$(Build.ArtifactStagingDirectory)' 
-    artifactName: 'myWebsiteName'
-
+    pathtoPublish: $(Build.ArtifactStagingDirectory)
+    artifactName: drop
 - task: DotNetCoreCLI@2
+  displayName: zipAfterPublish
   inputs:
     command: publish
-    publishWebProjects: True
-    arguments: '--configuration $(BuildConfiguration) --output $(Build.ArtifactStagingDirectory)'
-    zipAfterPublish: True
+    publishWebProjects: true
+    arguments: --configuration $(BuildConfiguration) --output $(Build.ArtifactStagingDirectory)
+    zipAfterPublish: true

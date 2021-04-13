@@ -13,12 +13,6 @@ steps:
     vstsFeed: my-vsts-feed
 
 - task: DotNetCoreCLI@2
-  displayName: dotnet tool install --global dotnet-sonarscanner
-  inputs:
-    command: dotnet tool install --global dotnet-sonarscanner
- 
-
-- task: DotNetCoreCLI@2
   displayName: dotnet build
   inputs:
     command: build

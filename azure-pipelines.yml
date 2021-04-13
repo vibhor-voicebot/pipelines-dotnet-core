@@ -15,7 +15,7 @@ steps:
 - task: DotNetCoreCLI@2
   displayName: dotnet tool install --global dotnet-sonarscanner
   inputs:
-    command: tool install --global dotnet-sonarscanner
+    command: dotnet tool install --global dotnet-sonarscanner
  
 
 - task: DotNetCoreCLI@2

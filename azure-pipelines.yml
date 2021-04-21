@@ -12,6 +12,7 @@ steps:
     feedsToUse: select
     vstsFeed: my-vsts-feed
 
+#New task added here
 - task: SonarSource.sonarcloud.14d9cde6-c1da-4d55-aa01-2965cd301255.SonarCloudPrepare@1
   displayName: 'Prepare analysis on SonarCloud'
   inputs:
@@ -36,6 +37,14 @@ steps:
     command: test
     projects: '**/*Tests/*.csproj'
     arguments: --configuration $(buildConfiguration)
+
+#New task added here
+- task: PublishTestResults@2
+  displayName: 'Publish Test Results **/TEST-*.xml'
+  inputs:
+    testResultsFormat: NUnit
+    failTaskOnFailedTests: true
+    
 - task: DotNetCoreCLI@2
   displayName: dotnet collect code coverage
   inputs:
@@ -47,6 +56,11 @@ steps:
   inputs:
     codeCoverageTool: Cobertura
     summaryFileLocation: $(Build.SourcesDirectory)/**/coverage.cobertura.xml
+
+#New Task added here
+- task: SonarSource.sonarcloud.ce096e50-6155-4de8-8800-4221aaeed4a1.SonarCloudAnalyze@1
+  displayName: 'Run Code Analysis'
+  
 - task: DotNetCoreCLI@2
   displayName: zipAfterPublish
   inputs:
@@ -66,3 +80,7 @@ steps:
     publishWebProjects: true
     arguments: --configuration $(BuildConfiguration) --output $(Build.ArtifactStagingDirectory)
     zipAfterPublish: true
+
+#New Task added here
+- task: SonarSource.sonarcloud.38b27399-a642-40af-bb7d-9971f69712e8.SonarCloudPublish@1
+  displayName: 'Publish Quality Gate Result'

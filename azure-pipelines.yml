@@ -32,7 +32,7 @@ steps:
     projects: '**/*.csproj'
     arguments: --configuration $(buildConfiguration)
 - task: DotNetCoreCLI@2
-  displayName: dotnet unit test task
+  displayName: dotnet unit test tasktype
   inputs:
     command: test
     projects: '**/*Tests/*.csproj'
